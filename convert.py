@@ -6,12 +6,11 @@ import os
 import csv
 import re
 import shutil
-import cv2
 import argparse
 
-class RRRRDownloader:
+class LDRConverter:
     def __init__(self, datapath, csvpath, outpath):
-        self.datapath = datapath
+        self.datapath = os.path.join(datapath, 'isprgb_crop', 'with_gt')
         self.csvpath = csvpath
         self.outpath = outpath
 
@@ -24,16 +23,21 @@ class RRRRDownloader:
 
         return inputs
 
-    def _download_helper(self, mode, folder_name):
+    def _convert_helper(self, mode, folder_name, args):
         with open(self.csvpath,'r') as f:
             header = f.readline()
-            count, total = 0, 0
+            total = 0
             for line in f:
                 row = line.strip().split(',')
                 name = row[0].split('/')
                 set_type = row[-1] # train/val/test
 
+                # skip images based on user's filers
                 if set_type != mode: continue
+                if args.type != 'all' and row[1] != args.type : continue
+                if args.reflection != 'all' and row[2] != args.reflection : continue
+                if args.ghost != 'all' and row[3] != args.ghost : continue
+                if args.motion != 'all' and row[4] != args.motion : continue
 
                 cam_fo = name[0] # camera folder
                 M = name[1] + '_M'
@@ -48,8 +52,7 @@ class RRRRDownloader:
                 for img in Mimages:
                     basename = os.path.basename(img)
                     new_folder = os.path.join(self.outpath, folder_name, 'M')
-                    if not os.path.exists(new_folder):
-                        os.makedirs(new_folder)
+                    os.makedirs(new_folder, exist_ok=True)
                     new_name = os.path.join(new_folder, cam_fo + '_' + basename)
                     shutil.copy(img, new_name)
 
@@ -57,8 +60,7 @@ class RRRRDownloader:
                 for img in Rimages:
                     basename = os.path.basename(img)
                     new_folder = os.path.join(self.outpath, folder_name, 'R')
-                    if not os.path.exists(new_folder):
-                        os.makedirs(new_folder)
+                    os.makedirs(new_folder, exist_ok=True)
                     new_name = os.path.join(new_folder, cam_fo + '_' + basename)
                     shutil.copy(img, new_name)
 
@@ -66,43 +68,43 @@ class RRRRDownloader:
                 for img in Timages:
                     basename = os.path.basename(img)
                     new_folder = os.path.join(self.outpath, folder_name, 'T')
-                    if not os.path.exists(new_folder):
-                        os.makedirs(new_folder)
+                    os.makedirs(new_folder, exist_ok=True)
                     new_name = os.path.join(new_folder, cam_fo + '_' + basename)
                     shutil.copy(img, new_name)
 
-                count += 1
+            print("generated %d triplets"%(total))
 
-            print("done %d images / %d crops transform"%(count, total))
-
-    def download(self, train, val, test, type=""):
+    def convert(self, args):
         # 0 for trainset, 1 for valset, 2 for test set
-        if train:
+        if args.train:
             print("generating trainset...")
-            self._download_helper('0', 'train')
-        if val:
+            self._convert_helper('0', 'train', args)
+        if args.val:
             print("generating valset...")
-            self._download_helper('1', 'val')
-        if test:
+            self._convert_helper('1', 'val', args)
+        if args.test:
             print("generating testset...")
-            self._download_helper('2', 'test')
+            self._convert_helper('2', 'test', args)
 
 
 def create_parser():
     parser = argparse.ArgumentParser(add_help=True)
     # paths
-    parser.add_argument('--datapath', type=str, default="/home/chenyang/disk1/pami2021-raw-rr/data/pami2021/isprgb_crop/with_gt",
+    parser.add_argument('--datapath', type=str, required=True,
                         help='path to dataset')
-    parser.add_argument('--csvpath', type=str, default="/home/chenyang/disk1/pami2021-raw-rr/data/pami2021/cleaned.csv",
+    parser.add_argument('--csvpath', type=str, required=True,
                         help='path to csv')
-    parser.add_argument('--output', type=str, default="/home/chenyang/disk1/pami2021-raw-rr/data/mydataset",
-                        help='path to store the transformed dataset')
+    parser.add_argument('--output', type=str, required=True,
+                        help='path to store the converted (sub) dataset')
     # dataset choices
     parser.add_argument('--train', action='store_true', help='generate trainset')
     parser.add_argument('--val', action='store_true', help='generate valset')
     parser.add_argument('--test', action='store_true', help='generate testset')
     # scene choices
-    parser.add_argument('--type', type=str, default="", help='BRBT/SRST/BRST')
+    parser.add_argument('--type', type=str, default="all", choices=['BRBT', 'SRST', 'BRST', 'all'], help='scene type')
+    parser.add_argument('--reflection', type=str, default="all", choices=['strong', 'medium', 'weak', 'all'], help='reflection type')
+    parser.add_argument('--ghost', type=str, default="all", choices=['0', '1', 'all'], help='generate subset with ghost effect')
+    parser.add_argument('--motion', type=str, default="all", choices=['0', '1', 'all'], help='generate subset with motion blur')
 
     return parser
 
@@ -117,7 +119,7 @@ if __name__ == "__main__":
     parser = create_parser()
     args = parse_args(parser)
 
-    downloader = RRRRDownloader(args.datapath, args.csvpath, args.output)
-    downloader.download(args.train, args.val, args.test)
+    downloader = LDRConverter(args.datapath, args.csvpath, args.output)
+    downloader.convert(args)
 
-    print("download done")
+    print("Done! Your subset(s) are ready!")
