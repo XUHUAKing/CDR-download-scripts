@@ -1,6 +1,6 @@
 """
-API for converting RRRR dataset into different subsets
-Lastest update: Apr. 8, 2021
+API for converting LDR dataset into different subsets
+Lastest update: May. 23, 2021
 """
 import os
 import csv
@@ -32,7 +32,7 @@ class LDRConverter:
                 name = row[0].split('/')
                 set_type = row[-1] # train/val/test
 
-                # skip images based on user's filers
+                # skip images based on user's filters
                 if set_type != mode: continue
                 if args.type != 'all' and row[1] != args.type : continue
                 if args.reflection != 'all' and row[2] != args.reflection : continue

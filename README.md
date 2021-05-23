@@ -21,17 +21,23 @@ You can choose to generate one (or a subset) of our dataset by setting the follo
 - ```--motion```
  
 For example, if you want to down only train set,
-```python convert.py --datapath DATAPATH --csvpath CSVPATH --output OUTPUTDIR --train```
+```
+python convert.py --datapath DATAPATH --csvpath CSVPATH --output OUTPUTDIR --train
+```
 
 Note that these arguments can be combined to generate a set satisfying all options,
-```python convert.py --datapath DATAPATH --csvpath CSVPATH --output OUTPUTDIR --test --type SRST --reflection medium```
+
+```
+python convert.py --datapath DATAPATH --csvpath CSVPATH --output OUTPUTDIR --test --type SRST --reflection medium
+```
+
 will generate testset with SRST type AND medium reflection.
 
 ## Output
 You must specify the output folder with ```--output``` argument.
 
 ### Folders structure
-You should expects the original data structure looks like
+You should expect the original data structure looks like
 ```
 data/
 ├── camera_raw
