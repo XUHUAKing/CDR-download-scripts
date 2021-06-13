@@ -3,7 +3,7 @@ We provide the python script to convert the dataset proposed in _A Labeled and D
 
 ## Setup
 The script requires Python 3.5+.
-Please download our data (~8GB) from this [link](https://hkustconnect-my.sharepoint.com/:f:/g/personal/xhuangat_connect_ust_hk/EsXABH4oswdLv7Mr8sqNC5kBxfQKG4YEKoJgD2X4PkgC-Q?e=IpvbOn).
+Please download our data (~8GB) from this [link](https://hkustconnect-my.sharepoint.com/:f:/g/personal/xhuangat_connect_ust_hk/Eo2Vv665MS1Gmn6H8CL6iesBySHyS3mll8zXSRWB-JQuqw?e=m2OUKB).
 
 ## Usage
 ```
