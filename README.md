@@ -3,7 +3,7 @@ We provide the python script to convert the dataset proposed in _A Labeled and D
 
 ## Setup
 The script requires Python 3.5+.
-Please download our data (~7.45GB) from this [link](https://hkustconnect-my.sharepoint.com/:f:/g/personal/xhuangat_connect_ust_hk/EoMqlhxZVQhNj0FpzzXKvDABf5Ol6NdSmXGwKe-b6hs0rg?e=Qnhah5). We have 900 triplets (M, R, T) and 1063 cropped triplets in total.
+Please download our data (~7.45GB) from this [link](https://hkustconnect-my.sharepoint.com/:f:/g/personal/xhuangat_connect_ust_hk/EoMqlhxZVQhNj0FpzzXKvDABf5Ol6NdSmXGwKe-b6hs0rg?e=Qnhah5). We have 1063 triplets (M, R, T) in total.
 
 ## Usage
 ```
