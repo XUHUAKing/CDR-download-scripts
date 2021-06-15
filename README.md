@@ -68,3 +68,9 @@ Each leaf directory will contain ```.png``` files accordingly. Also, there is a 
 
 For normal benchmarking (as written in our script), only **isprgb_crop/** folder will be used, so we only make this folder public for the first release. 
 <!-- However, you are also welcome to play with the original data. But please ensure that only valid region bounded by mask are valid for _T = M-R_. -->
+
+## Citing
+If you find this benchmark or code useful, kindly reference:
+```
+
+```
