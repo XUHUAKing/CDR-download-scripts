@@ -7,7 +7,7 @@ Please download our data (~7.45GB) from this [link](https://hkustconnect-my.shar
 
 ## Usage
 ```
-python convert.py --datapath DATAPATH --csvpath CSVPATH --output OUTPUTDIR --[options]
+python convert.py --datapath <DATAPATH> --csvpath <CSVPATH> --output <OUTPUTDIR> --[options]
 ```
 
 You can choose to generate one (or a subset) of our dataset by setting the following self-explanatory arguments:
