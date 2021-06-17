@@ -1,5 +1,5 @@
-# LDR Converter
-We provide the python script to convert the dataset proposed in _A Labeled and Diverse Real-World Reflection Removal Benchmark (LDR)_ based on different options.
+# CDR Converter
+We provide the python script to convert the dataset proposed in _CDR: A Categorized and Diverse Real-World Reflection Removal Dataset_ based on different options.
 
 ## Setup
 The script requires Python 3.5+.
