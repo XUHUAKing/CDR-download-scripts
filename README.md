@@ -70,7 +70,7 @@ For normal benchmarking (as written in our script), only **isprgb_crop/** folder
 <!-- However, you are also welcome to play with the original data. But please ensure that only valid region bounded by mask are valid for _T = M-R_. -->
 
 ## Citing
-If you find this benchmark or code useful, kindly reference:
+If you find this dataset or code useful, please kindly reference:
 ```
 
 ```
