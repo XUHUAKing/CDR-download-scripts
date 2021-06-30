@@ -2,7 +2,7 @@
 We provide the python script to convert the dataset proposed in _CDR: A Categorized and Diverse Real-World Reflection Removal Dataset_ based on different options.
 
 ## Setup
-The script requires Python 3.5+.
+The script requires Python 3.5+ and cv2.
 Please download our data (~7.45GB) from this [link](https://hkustconnect-my.sharepoint.com/:f:/g/personal/xhuangat_connect_ust_hk/EkjThMWOhT1EoKrK-U6l8EkB9BeKQjPNjB3mlK2omAZQIw?e=YPb48i). We have 1063 triplets (M, R, T) in total.
 
 ## Usage
@@ -32,6 +32,8 @@ python convert.py --datapath <DATAPATH> --csvpath <CSVPATH> --output <OUTPUTDIR>
 ```
 
 will generate testset with SRST type AND medium reflection.
+
+Considering some methods may require input image in size of a multiple 32, we also provide an argument ```--crop32```, which will generate images in size of its nearest 32's multiples.
 
 ## Output
 You must specify the output folder with ```--output``` argument.

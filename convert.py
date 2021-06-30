@@ -1,14 +1,15 @@
 """
-API for converting LDR dataset into different subsets
-Lastest update: Jun. 11, 2021
+API for converting CDR dataset into different subsets
+Lastest update: Jun. 30, 2021
 """
 import os
 import csv
 import re
 import shutil
 import argparse
+import cv2
 
-class LDRConverter:
+class CDRConverter:
     def __init__(self, datapath, csvpath, outpath):
         self.datapath = os.path.join(datapath, 'isprgb_crop', 'with_gt')
         self.csvpath = csvpath
@@ -54,7 +55,14 @@ class LDRConverter:
                     new_folder = os.path.join(self.outpath, folder_name, 'M')
                     os.makedirs(new_folder, exist_ok=True)
                     new_name = os.path.join(new_folder, cam_fo + '_' + basename)
-                    shutil.copy(img, new_name)
+                    if args.crop32:
+                        # crop image into 32's multiples
+                        img = cv2.imread(img, -1)
+                        new_input_h = 32*(img.shape[0]//32)
+                        new_input_w = 32*(img.shape[1]//32)
+                        cv2.imwrite(new_name, img[:new_input_h, :new_input_w, :])
+                    else:
+                        shutil.copy(img, new_name)
 
                 # move all R images to new_path
                 for img in Rimages:
@@ -62,7 +70,14 @@ class LDRConverter:
                     new_folder = os.path.join(self.outpath, folder_name, 'R')
                     os.makedirs(new_folder, exist_ok=True)
                     new_name = os.path.join(new_folder, cam_fo + '_' + basename)
-                    shutil.copy(img, new_name)
+                    if args.crop32:
+                        # crop image into 32's multiples
+                        img = cv2.imread(img, -1)
+                        new_input_h = 32*(img.shape[0]//32)
+                        new_input_w = 32*(img.shape[1]//32)
+                        cv2.imwrite(new_name, img[:new_input_h, :new_input_w, :])
+                    else:
+                        shutil.copy(img, new_name)
 
                 # move all T images to new_path
                 for img in Timages:
@@ -70,7 +85,14 @@ class LDRConverter:
                     new_folder = os.path.join(self.outpath, folder_name, 'T')
                     os.makedirs(new_folder, exist_ok=True)
                     new_name = os.path.join(new_folder, cam_fo + '_' + basename)
-                    shutil.copy(img, new_name)
+                    if args.crop32:
+                        # crop image into 32's multiples
+                        img = cv2.imread(img, -1)
+                        new_input_h = 32*(img.shape[0]//32)
+                        new_input_w = 32*(img.shape[1]//32)
+                        cv2.imwrite(new_name, img[:new_input_h, :new_input_w, :])
+                    else:
+                        shutil.copy(img, new_name)
 
             print("generated %d triplets"%(total))
 
@@ -100,6 +122,7 @@ def create_parser():
     parser.add_argument('--train', action='store_true', help='generate trainset')
     parser.add_argument('--val', action='store_true', help='generate valset')
     parser.add_argument('--test', action='store_true', help='generate testset')
+    parser.add_argument('--crop32', action='store_true', help='some methods require image size of a multiple of 32, this option help crop the image')
     # scene choices
     parser.add_argument('--type', type=str, default="all", choices=['BRBT', 'SRST', 'BRST', 'all'], help='scene type')
     parser.add_argument('--reflection', type=str, default="all", choices=['strong', 'medium', 'weak', 'all'], help='reflection type')
@@ -119,7 +142,7 @@ if __name__ == "__main__":
     parser = create_parser()
     args = parse_args(parser)
 
-    downloader = LDRConverter(args.datapath, args.csvpath, args.output)
+    downloader = CDRConverter(args.datapath, args.csvpath, args.output)
     downloader.convert(args)
 
     print("Done! Your subset(s) are ready!")
