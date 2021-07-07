@@ -55,12 +55,17 @@ class CDRConverter:
                     new_folder = os.path.join(self.outpath, folder_name, 'M')
                     os.makedirs(new_folder, exist_ok=True)
                     new_name = os.path.join(new_folder, cam_fo + '_' + basename)
-                    if args.crop32:
-                        # crop image into 32's multiples
+                    if args.crop32 or args.downsample_scale:
                         img = cv2.imread(img, -1)
-                        new_input_h = 32*(img.shape[0]//32)
-                        new_input_w = 32*(img.shape[1]//32)
-                        cv2.imwrite(new_name, img[:new_input_h, :new_input_w, :])
+                        if args.downsample_scale:
+                            # downsample
+                            img = img[::args.downsample_scale, ::args.downsample_scale, :]
+                        if args.crop32:
+                            # crop image into 32's multiples
+                            new_input_h = 32*(img.shape[0]//32)
+                            new_input_w = 32*(img.shape[1]//32)
+                            img = img[:new_input_h, :new_input_w, :]
+                        cv2.imwrite(new_name, img)
                     else:
                         shutil.copy(img, new_name)
 
@@ -70,12 +75,17 @@ class CDRConverter:
                     new_folder = os.path.join(self.outpath, folder_name, 'R')
                     os.makedirs(new_folder, exist_ok=True)
                     new_name = os.path.join(new_folder, cam_fo + '_' + basename)
-                    if args.crop32:
-                        # crop image into 32's multiples
+                    if args.crop32 or args.downsample_scale:
                         img = cv2.imread(img, -1)
-                        new_input_h = 32*(img.shape[0]//32)
-                        new_input_w = 32*(img.shape[1]//32)
-                        cv2.imwrite(new_name, img[:new_input_h, :new_input_w, :])
+                        if args.downsample_scale:
+                            # downsample
+                            img = img[::args.downsample_scale, ::args.downsample_scale, :]
+                        if args.crop32:
+                            # crop image into 32's multiples
+                            new_input_h = 32*(img.shape[0]//32)
+                            new_input_w = 32*(img.shape[1]//32)
+                            img = img[:new_input_h, :new_input_w, :]
+                        cv2.imwrite(new_name, img)
                     else:
                         shutil.copy(img, new_name)
 
@@ -85,12 +95,17 @@ class CDRConverter:
                     new_folder = os.path.join(self.outpath, folder_name, 'T')
                     os.makedirs(new_folder, exist_ok=True)
                     new_name = os.path.join(new_folder, cam_fo + '_' + basename)
-                    if args.crop32:
-                        # crop image into 32's multiples
+                    if args.crop32 or args.downsample_scale:
                         img = cv2.imread(img, -1)
-                        new_input_h = 32*(img.shape[0]//32)
-                        new_input_w = 32*(img.shape[1]//32)
-                        cv2.imwrite(new_name, img[:new_input_h, :new_input_w, :])
+                        if args.downsample_scale:
+                            # downsample
+                            img = img[::args.downsample_scale, ::args.downsample_scale, :]
+                        if args.crop32:
+                            # crop image into 32's multiples
+                            new_input_h = 32*(img.shape[0]//32)
+                            new_input_w = 32*(img.shape[1]//32)
+                            img = img[:new_input_h, :new_input_w, :]
+                        cv2.imwrite(new_name, img)
                     else:
                         shutil.copy(img, new_name)
 
@@ -123,6 +138,7 @@ def create_parser():
     parser.add_argument('--val', action='store_true', help='generate valset')
     parser.add_argument('--test', action='store_true', help='generate testset')
     parser.add_argument('--crop32', action='store_true', help='some methods require image size of a multiple of 32, this option help crop the image')
+    parser.add_argument('--downsample_scale', type=int, help='downsample x N, N must be integer')
     # scene choices
     parser.add_argument('--type', type=str, default="all", choices=['BRBT', 'SRST', 'BRST', 'all'], help='scene type')
     parser.add_argument('--reflection', type=str, default="all", choices=['strong', 'medium', 'weak', 'all'], help='reflection type')
