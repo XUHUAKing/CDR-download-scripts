@@ -27,7 +27,7 @@ class CDRConverter:
     def _convert_helper(self, mode, folder_name, args):
         with open(self.csvpath,'r') as f:
             header = f.readline()
-            total = 0
+            total, skip = 0, 0
             for line in f:
                 row = line.strip().split(',')
                 name = row[0].split('/')
@@ -55,7 +55,7 @@ class CDRConverter:
                     new_folder = os.path.join(self.outpath, folder_name, 'M')
                     os.makedirs(new_folder, exist_ok=True)
                     new_name = os.path.join(new_folder, cam_fo + '_' + basename)
-                    if args.crop32 or args.downsample_scale:
+                    if args.crop32 or args.downsample_scale or args.remove_extreme:
                         img = cv2.imread(img, -1)
                         if args.downsample_scale:
                             # downsample
@@ -65,6 +65,14 @@ class CDRConverter:
                             new_input_h = 32*(img.shape[0]//32)
                             new_input_w = 32*(img.shape[1]//32)
                             img = img[:new_input_h, :new_input_w, :]
+                        if args.remove_extreme:
+                            # remove crops with extreme height/width ratios
+                            curr_h, curr_w = img.shape[:2]
+                            long_side = max(curr_h, curr_w)
+                            short_side = min(curr_h, curr_w)
+                            if long_side / short_side > 4:
+                                skip += 1
+                                continue
                         cv2.imwrite(new_name, img)
                     else:
                         shutil.copy(img, new_name)
@@ -75,7 +83,7 @@ class CDRConverter:
                     new_folder = os.path.join(self.outpath, folder_name, 'R')
                     os.makedirs(new_folder, exist_ok=True)
                     new_name = os.path.join(new_folder, cam_fo + '_' + basename)
-                    if args.crop32 or args.downsample_scale:
+                    if args.crop32 or args.downsample_scale or args.remove_extreme:
                         img = cv2.imread(img, -1)
                         if args.downsample_scale:
                             # downsample
@@ -85,6 +93,12 @@ class CDRConverter:
                             new_input_h = 32*(img.shape[0]//32)
                             new_input_w = 32*(img.shape[1]//32)
                             img = img[:new_input_h, :new_input_w, :]
+                        if args.remove_extreme:
+                            # remove crops with extreme height/width ratios
+                            curr_h, curr_w = img.shape[:2]
+                            long_side = max(curr_h, curr_w)
+                            short_side = min(curr_h, curr_w)
+                            if long_side / short_side > 4: continue
                         cv2.imwrite(new_name, img)
                     else:
                         shutil.copy(img, new_name)
@@ -95,7 +109,7 @@ class CDRConverter:
                     new_folder = os.path.join(self.outpath, folder_name, 'T')
                     os.makedirs(new_folder, exist_ok=True)
                     new_name = os.path.join(new_folder, cam_fo + '_' + basename)
-                    if args.crop32 or args.downsample_scale:
+                    if args.crop32 or args.downsample_scale or args.remove_extreme:
                         img = cv2.imread(img, -1)
                         if args.downsample_scale:
                             # downsample
@@ -105,11 +119,17 @@ class CDRConverter:
                             new_input_h = 32*(img.shape[0]//32)
                             new_input_w = 32*(img.shape[1]//32)
                             img = img[:new_input_h, :new_input_w, :]
+                        if args.remove_extreme:
+                            # remove crops with extreme height/width ratios
+                            curr_h, curr_w = img.shape[:2]
+                            long_side = max(curr_h, curr_w)
+                            short_side = min(curr_h, curr_w)
+                            if long_side / short_side > 4: continue
                         cv2.imwrite(new_name, img)
                     else:
                         shutil.copy(img, new_name)
 
-            print("generated %d triplets"%(total))
+            print("generated %d triplets"%(total-skip))
 
     def convert(self, args):
         # 0 for trainset, 1 for valset, 2 for test set
@@ -139,6 +159,7 @@ def create_parser():
     parser.add_argument('--test', action='store_true', help='generate testset')
     parser.add_argument('--crop32', action='store_true', help='some methods require image size of a multiple of 32, this option help crop the image')
     parser.add_argument('--downsample_scale', type=int, help='downsample x N, N must be integer')
+    parser.add_argument('--remove_extreme', action='store_true', help='remove the crops with extreme height/width ratio')
     # scene choices
     parser.add_argument('--type', type=str, default="all", choices=['BRBT', 'SRST', 'BRST', 'all'], help='scene type')
     parser.add_argument('--reflection', type=str, default="all", choices=['strong', 'medium', 'weak', 'all'], help='reflection type')

@@ -35,6 +35,8 @@ will generate testset with SRST type AND medium reflection.
 
 Considering some methods may require input image in size of a multiple 32, we also provide an argument ```--crop32```, which will generate images in size of its nearest 32's multiples.
 
+Some crops in our dataset may have large ratio of longer side / shorter side, you can remove those crops by ```--remove_extreme```
+
 Our dataset is in high resolution, so we also support downsampling option by specifying ```--downsample_scale``` argument followed by an integer.
 ## Output
 You must specify the output folder with ```--output``` argument.
