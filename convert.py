@@ -10,10 +10,13 @@ import argparse
 import cv2
 
 class CDRConverter:
-    def __init__(self, datapath, csvpath, outpath):
+    def __init__(self, datapath, csvpath, outpath, problem_txt):
         self.datapath = os.path.join(datapath, 'isprgb_crop', 'with_gt')
         self.csvpath = csvpath
         self.outpath = outpath
+        with open(problem_txt, 'r') as f:
+            self.problemlist = f.readlines()
+            self.problemlist = [line.rstrip() for line in self.problemlist]
 
     def _get_names(self, path, name):
         # helper function to get input names
@@ -23,6 +26,14 @@ class CDRConverter:
         inputs = [os.path.join(path, f) for f in inputs if regex.match(f)]
 
         return inputs
+
+    def _check_problem(self, name):
+        # check whether this crop is problematic
+        # convert files name to _T_
+        key_name = name.replace("_M_", "_T_").replace("_R_", "_T_")
+        if key_name in self.problemlist:
+            return True
+        return False
 
     def _convert_helper(self, mode, folder_name, args):
         with open(self.csvpath,'r') as f:
@@ -55,6 +66,10 @@ class CDRConverter:
                     new_folder = os.path.join(self.outpath, folder_name, 'M')
                     os.makedirs(new_folder, exist_ok=True)
                     new_name = os.path.join(new_folder, cam_fo + '_' + basename)
+                    # remove if problematic
+                    if self._check_problem(os.path.basename(new_name)):
+                        print("skip %s" % (new_name))
+                        continue
                     if args.crop32 or args.downsample_scale or args.remove_extreme:
                         img = cv2.imread(img, -1)
                         if args.downsample_scale:
@@ -83,6 +98,10 @@ class CDRConverter:
                     new_folder = os.path.join(self.outpath, folder_name, 'R')
                     os.makedirs(new_folder, exist_ok=True)
                     new_name = os.path.join(new_folder, cam_fo + '_' + basename)
+                    # remove if problematic
+                    if self._check_problem(os.path.basename(new_name)):
+                        print("skip %s" % (new_name))
+                        continue
                     if args.crop32 or args.downsample_scale or args.remove_extreme:
                         img = cv2.imread(img, -1)
                         if args.downsample_scale:
@@ -109,6 +128,10 @@ class CDRConverter:
                     new_folder = os.path.join(self.outpath, folder_name, 'T')
                     os.makedirs(new_folder, exist_ok=True)
                     new_name = os.path.join(new_folder, cam_fo + '_' + basename)
+                    # remove if problematic
+                    if self._check_problem(os.path.basename(new_name)):
+                        print("skip %s" % (new_name))
+                        continue
                     if args.crop32 or args.downsample_scale or args.remove_extreme:
                         img = cv2.imread(img, -1)
                         if args.downsample_scale:
@@ -153,6 +176,8 @@ def create_parser():
                         help='path to csv')
     parser.add_argument('--output', type=str, required=True,
                         help='path to store the converted (sub) dataset')
+    parser.add_argument('--problem_txt', type=str, required=True,
+                        help='txt file storing problematic crops')
     # dataset choices
     parser.add_argument('--train', action='store_true', help='generate trainset')
     parser.add_argument('--val', action='store_true', help='generate valset')
@@ -179,7 +204,7 @@ if __name__ == "__main__":
     parser = create_parser()
     args = parse_args(parser)
 
-    downloader = CDRConverter(args.datapath, args.csvpath, args.output)
+    downloader = CDRConverter(args.datapath, args.csvpath, args.output, args.problem_txt)
     downloader.convert(args)
 
     print("Done! Your subset(s) are ready!")
